@@ -19,37 +19,39 @@ import numpy as np
 import seaborn as sns
 
 
-if __name__ == '__main__':
-    sns.set()
-    opts = docopt(__doc__)
-    infilenames = opts['<file>']
-    nolag = opts['--nolag']
+class PlotData():
+    def __init__(self, no_lag=True, skip_columns=0):
+        self.no_lag = no_lag
+        self.skip_columns = skip_columns
+        sns.set()
 
-    for i, fn in enumerate(infilenames):
-        df = read_csv(fn, sep=',')
-        possible_cols = list(df.columns.values)
-        if opts['--skipcols'] is not None:
-            skipcols = int(opts['--skipcols'])
-            dropcols = [x for x in range(skipcols)]
-            df = df.drop(df.columns[dropcols], axis=1)
-        if nolag:
-            dropcols = [c for c in possible_cols if 'lag' in c]
+    def _drop_columns(self, df):
+        skipcols = self.skip_columns
+        columns = df.columns.values.tolist()
+        dropcols = [x for x in range(len(columns) - skipcols)]
+        df = df.drop(df.columns[dropcols], axis=1)
+        if self.no_lag:
+            dropcols = [c for c in columns if 'lag' in c]
             df = df.drop(dropcols, axis=1)
+        return df
 
-        df = df.dropna()
-        df = df.apply(zscore)
+    def plot(self, filenames):
+        for i, filename in enumerate(filenames):
+            df = self._drop_columns(read_csv(filename, sep=','))
+            df = df.dropna()
+            df = df.apply(zscore)
 
-        f = plt.figure(i)
+            fig = plt.figure(i)
 
-        step = int(df.shape[0] / XTICKS_HEATMAP)
-        xticklabels = np.arange(0, df.shape[0], step)
+            step = int(df.shape[0] / XTICKS_HEATMAP)
+            xticklabels = np.arange(0, df.shape[0], step)
 
-        ax = sns.heatmap(np.transpose(df), cmap='YlGnBu',
-                         xticklabels=xticklabels)
+            ax = sns.heatmap(np.transpose(df), cmap='YlGnBu',
+                             xticklabels=xticklabels)
 
-        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
-        f.suptitle(get_filename_from_path(fn))
-        plt.yticks(rotation='horizontal')
+            fig.suptitle(get_filename_from_path(filename))
+            plt.yticks(rotation='horizontal')
 
-    plt.show()
+        plt.show()
