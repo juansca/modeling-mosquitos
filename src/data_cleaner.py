@@ -1,18 +1,3 @@
-"""Clean, select and parse data.
-
-Usage:
-  ./data_cleaner.py -i <file> -o <file>
-  ./data_cleaner.py -i <file> -s <n> -p <n> -o <file>
-
-Options:
-  -i <file>                Input data file
-  -o <file>                Output data file or dir in the case of splitting
-  -s <n>                   Number of instances to generate from data
-  -p <n>                   percentage of overlapping between the instances
-
-  --help                   show this screen
-"""
-from docopt import docopt
 from scipy.stats import zscore
 from pandas import read_csv
 from constants import USECOLS
@@ -21,45 +6,63 @@ import numpy as np
 USECOLS_STRING = ",".join(USECOLS)
 
 
-def overlap(a, b, p):
-    split_point = int(p * len(a))
-    return np.concatenate([a, b[:split_point]])
+class DataCleaner():
+    """Clean, select and parse data."""
 
+    def __init__(self, in_file, out_file):
+        """
+        Init Method.
 
-def splitter(df, n_splits, p=0.25):
-    n_cols = df.shape[0]
-    ratio = int(n_cols / n_splits)
-    spliting_indexes = [i for i in range(ratio, n_cols - ratio, ratio)]
+        Args:
+            in_file: Input data filename
+            out_file: Output data filename or dir in the case of splitting
+        """
 
-    dfs = np.split(df, spliting_indexes, axis=0)
-    for i in range(len(dfs) - 1):
-        dfs[i] = overlap(dfs[i], dfs[i+1], p)
-    return dfs
+        self.in_file = in_file
+        self.out_file = out_file
 
+    def _overlap(self, a, b, p):
+        split_point = int(p * len(a))
+        return np.concatenate([a, b[:split_point]])
 
-if __name__ == '__main__':
-    opts = docopt(__doc__)
+    def _splitter(self, df, n_splits, p=0.25):
+        n_cols = df.shape[0]
+        ratio = int(n_cols / n_splits)
+        spliting_indexes = [i for i in range(ratio, n_cols - ratio, ratio)]
 
-    infilename = opts['-i']
-    outfilename = opts['-o']
+        dfs = np.split(df, spliting_indexes, axis=0)
+        for i in range(len(dfs) - 1):
+            dfs[i] = self._overlap(dfs[i], dfs[i+1], p)
+        return dfs
 
-    df = read_csv(infilename, sep=',', usecols=USECOLS)
-    df = df.dropna()
+    def clean(self, n_inst=None, p_overlap=0):
+        """
+        Clean the data on input filename.
 
-    result = df.apply(zscore)
+        Args:
+            n_inst:     Number of instances to generate from data
+            p_overlap:  Percentage of overlapping between the instances
+        """
+        in_path = self.in_file
+        out_path = self.out_file
 
-    result['Week'] = np.arange(0, df.shape[0])
+        df = read_csv(in_path, sep=',', usecols=USECOLS)
+        df = df.dropna()
 
-    if opts['-s'] is None:
-        result.to_csv(outfilename, sep=',', index=False)
-    else:
-        nsplit = int(opts['-s'])
-        p = float(opts['-p'])
+        result = df.apply(zscore)
 
-        results = splitter(result, nsplit, p)
+        result['Week'] = np.arange(0, df.shape[0])
 
-        infilename_no_path = infilename.split('/')[-1].split('.')[0]
-        for i, r in enumerate(results):
-            out = outfilename + infilename_no_path + str(i) + '.csv'
-            fmt = ",".join(["%s"] * df.shape[1])
-            np.savetxt(out, r, fmt=fmt, delimiter=',', header=USECOLS_STRING)
+        if n_inst is None:
+            result.to_csv(out_path, sep=',', index=False)
+        else:
+            nsplit = int(n_inst)
+            p = float(p_overlap)
+
+            results = self._splitter(result, nsplit, p)
+
+            infilename_no_path = in_path.split('/')[-1].split('.')[0]
+            for i, r in enumerate(results):
+                out = out_path + infilename_no_path + str(i) + '.csv'
+                fmt = ",".join(["%s"] * df.shape[1])
+                np.savetxt(out, r, fmt=fmt, delimiter=',', header=USECOLS_STRING)
