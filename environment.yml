@@ -1,0 +1,11 @@
+name: models-env
+
+dependencies:
+  - docopt
+  - matplotlib
+  - numpy
+  - tabulate
+  - scikit-learn
+  - seaborn
+  - scipy
+  - pandas
