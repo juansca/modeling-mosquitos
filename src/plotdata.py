@@ -14,7 +14,7 @@ from scipy.stats import zscore
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 from utils import get_filename_from_path
-from constants import INDEPENDENT_NO_LAG, DEPENDENT, XTICKS_HEATMAP
+from constants import XTICKS_HEATMAP
 import numpy as np
 import seaborn as sns
 

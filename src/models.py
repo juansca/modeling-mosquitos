@@ -1,12 +1,3 @@
-"""Train a model
-
-Usage:
-  ./models.py -i <s> model <s> param <n> ...
-  ./models.py -i <s> model <s> --predict <s> --sp <n> -p <s>
-  ./models.py -i <s> model <s> --predict <s> --sp <n>
-  ./models.py -h | --help
-
-"""
 from sklearn.neural_network import MLPRegressor
 from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
@@ -14,6 +5,7 @@ from sklearn.linear_model import RidgeCV
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
+
 
 def add_pca_to_model(model):
     class PCAModel(model):

@@ -9,7 +9,7 @@ USECOLS = [
     'Country cold days 10',
     'Country cold degrees 10',
 ]
-"""Colums that were selected to be used in the models."""
+"""Features to be used in the models."""
 
 
 FIRSTCOLS = [
