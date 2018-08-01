@@ -4,21 +4,6 @@ from sklearn.model_selection import TimeSeriesSplit
 from sklearn.model_selection import cross_val_score
 
 
-def to_classes(xs, start=0, stop=1, nclasses=10):
-    """Return a Classes array"""
-    classified = xs
-    intervals = np.linspace(start, stop, nclasses+1)
-    for i in range(len(xs)):
-        j = 0
-        while not (xs[i] >= intervals[j] and xs[i] <= intervals[j + 1]):
-            j += 1
-            if j == len(intervals) - 1:
-                break
-        classified[i] = j
-    assert len(xs) == len(classified)
-    return classified
-
-
 def smoothing(xs):
     n = len(xs)
     for i in range(1, n - 1):
@@ -55,7 +40,6 @@ def stats(xs, ts, model, n_splits=5):
     cv = TimeSeriesSplit(n_splits)
     scores = cross_val_score(model, xs, ts, cv=cv.split(xs),
                              scoring='explained_variance')
-#    scores = np.sqrt(-scores)
     mean = scores.mean()
     std_dev = scores.std()
 

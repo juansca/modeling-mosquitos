@@ -35,7 +35,7 @@ class PlotData():
             df = df.drop(dropcols, axis=1)
         return df
 
-    def plot(self, filenames):
+    def plot_heatmap(self, filenames):
         for i, filename in enumerate(filenames):
             df = self._drop_columns(read_csv(filename, sep=','))
             df = df.dropna()
@@ -55,3 +55,33 @@ class PlotData():
             plt.yticks(rotation='horizontal')
 
         plt.show()
+
+    def _generate_curve_plot(self, weeks,
+                             y_true, y_pred,
+                             xlabel, ylabel,
+                             label_true, label_pred, dpi):
+        plt.clf()
+
+        plt.plot(weeks, y_true, color='c', linestyle='dashed', label=label_true)
+        plt.plot(weeks, y_pred, color='g', linestyle='solid', label=label_pred)
+
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+
+        plt.legend()
+
+    def plot_result(self, weeks, y_true, y_pred, xlabel='Weeks',
+                    ylabel='Normalized abundance', label_true='Ground truth',
+                    label_pred='Model', dpi=300):
+
+        self._generate_curve_plot(weeks, y_true, y_pred, xlabel,
+                                  ylabel, label_true, label_pred, dpi)
+        plt.show()
+
+    def save_plot_result(self, filename, weeks, y_true, y_pred, xlabel='Weeks',
+                    ylabel='Normalized abundance', label_true='Ground truth',
+                    label_pred='Model', dpi=300):
+        self._generate_curve_plot(weeks, y_true, y_pred, xlabel,
+                                  ylabel, label_true, label_pred, dpi)
+
+        plt.savefig(filename, format='eps', dpi=dpi)
