@@ -8,7 +8,6 @@ Options:
   --nolag                  only plot variables with no lag
   --help                   show this screen
 """
-from docopt import docopt
 from pandas import read_csv
 from scipy.stats import zscore
 import matplotlib.pyplot as plt
@@ -23,7 +22,6 @@ class PlotData():
     def __init__(self, no_lag=True, skip_columns=0):
         self.no_lag = no_lag
         self.skip_columns = skip_columns
-        sns.set()
 
     def _drop_columns(self, df):
         skipcols = self.skip_columns
@@ -35,7 +33,9 @@ class PlotData():
             df = df.drop(dropcols, axis=1)
         return df
 
-    def plot_heatmap(self, filenames):
+    def plot_heatmap(self, filenames, dpi=300):
+        sns.set()
+
         for i, filename in enumerate(filenames):
             df = self._drop_columns(read_csv(filename, sep=','))
             df = df.dropna()
@@ -54,34 +54,38 @@ class PlotData():
             fig.suptitle(get_filename_from_path(filename))
             plt.yticks(rotation='horizontal')
 
-        plt.show()
-
-    def _generate_curve_plot(self, weeks,
-                             y_true, y_pred,
-                             xlabel, ylabel,
-                             label_true, label_pred, dpi):
+    def generate_curve_plot(self, weeks, y_true, y_pred,
+                            xlabel='Weeks', ylabel='Normalized abundance',
+                            label_true='Ground truth',
+                            label_pred='Model', dpi=300):
+        self.dpi = dpi
         plt.clf()
 
-        plt.plot(weeks, y_true, color='c', linestyle='dashed', label=label_true)
-        plt.plot(weeks, y_pred, color='g', linestyle='solid', label=label_pred)
+        plt.plot(weeks, y_true,
+                 color='c', linestyle='dashed', label=label_true)
+
+        plt.plot(weeks, y_pred,
+                 color='g', linestyle='solid', label=label_pred)
 
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
 
         plt.legend()
 
-    def plot_result(self, weeks, y_true, y_pred, xlabel='Weeks',
-                    ylabel='Normalized abundance', label_true='Ground truth',
-                    label_pred='Model', dpi=300):
-
-        self._generate_curve_plot(weeks, y_true, y_pred, xlabel,
-                                  ylabel, label_true, label_pred, dpi)
+    def plot_result(self):
+        if len(plt.get_fignums()) == 0:
+            raise SavingWithoutPlot('Trying to show a figure before plot it')
         plt.show()
 
-    def save_plot_result(self, filename, weeks, y_true, y_pred, xlabel='Weeks',
-                    ylabel='Normalized abundance', label_true='Ground truth',
-                    label_pred='Model', dpi=300):
-        self._generate_curve_plot(weeks, y_true, y_pred, xlabel,
-                                  ylabel, label_true, label_pred, dpi)
+    def save_plot_result(self, filename):
+        if len(plt.get_fignums()) == 0:
+            raise SavingWithoutPlot('Trying to save a figure before plot it')
+        plt.savefig(filename, format='eps', dpi=self.dpi)
 
-        plt.savefig(filename, format='eps', dpi=dpi)
+
+class SavingWithoutPlot(Exception):
+    """
+    This class represent an exception ocurred when try to show or save a
+    figure before plot it.
+    """
+    pass
