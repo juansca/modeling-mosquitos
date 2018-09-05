@@ -1,7 +1,9 @@
 from scipy.stats import zscore
 from pandas import read_csv
-from constants import USECOLS
 import numpy as np
+from pathlib import Path
+
+from constants import USECOLS
 
 USECOLS_STRING = ",".join(USECOLS)
 
@@ -18,8 +20,8 @@ class DataCleaner():
             out_file: Output data filename or dir in the case of splitting
         """
 
-        self.in_file = in_file
-        self.out_file = out_file
+        self.in_file = Path(in_file)
+        self.out_file = Path(out_file)
 
     def _overlap(self, a, b, p):
         split_point = int(p * len(a))
@@ -61,8 +63,9 @@ class DataCleaner():
 
             results = self._splitter(result, nsplit, p)
 
-            infilename_no_path = in_path.split('/')[-1].split('.')[0]
+            fname_without_ext = in_path.stem
+
             for i, r in enumerate(results):
-                out = out_path + infilename_no_path + str(i) + '.csv'
+                out = Path(out_path, fname_without_ext, str(i), '.csv')
                 fmt = ",".join(["%s"] * df.shape[1])
                 np.savetxt(out, r, fmt=fmt, delimiter=',', header=USECOLS_STRING)
