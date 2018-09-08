@@ -1,4 +1,5 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
+
 ###############################################################################
 # This script is the command that is executed every run.
 # Check the examples in examples/
@@ -19,6 +20,7 @@
 
 import datetime
 import os.path
+import os
 import re
 import subprocess
 import sys
@@ -29,15 +31,16 @@ import sys
 # This example is for the ACOTSP software. Compare it with
 # examples/acotsp/target-runner
 # exe = "~/bin/executable"
-exe = "python3 ../src/script.py"
+ROOT_DIR = os.getcwd()
+exe = os.path.join(ROOT_DIR, "main_tune.py")
 fixed_params = ""
 
 
 # This is an example of reading a number from the output.
 def parse_output(out):
-    match = re.search(r'Best ([-+0-9.eE]+)', out.strip())
+    match = re.search(r'[-+0-9.eE]+', out.strip())
     if match:
-        return match.group(1)
+        return match.group(0)
     else:
         return "No match"
 
@@ -56,6 +59,11 @@ def check_executable(fpath):
         target_runner_error(str(fpath) + " is not executable")
 
 
+def touch(path):
+    with open(path, 'a'):
+        os.utime(path, None)
+
+
 def create_out_err_files(candidate_id, instance_id):
     out_components = ["c", str(candidate_id), "-",
                       str(instance_id), ".stdout"]
@@ -65,17 +73,19 @@ def create_out_err_files(candidate_id, instance_id):
                         str(instance_id), ".stderr"]
     error_file = ''.join(error_components)
 
+    touch(out_file)
+    touch(error_file)
     if not os.path.isfile(out_file):
         target_runner_error("output file {} not found.".format(out_file))
 
     if not os.path.isfile(error_file):
-        target_runner_error("output file {} not found.".format(error_file))
+        target_runner_error("Error file {} not found.".format(error_file))
 
     return out_file, error_file
 
 
 def create_command(exe, fixed_params, instance, cand_params):
-    cmd = [exe, fixed_params.split(), "-i", instance, cand_params]
+    cmd = [exe] + fixed_params.split() + ["-i"] + cand_params
 
     return cmd
 
