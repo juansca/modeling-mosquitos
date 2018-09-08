@@ -23,7 +23,7 @@ targetRunner = "./target-runner.py"
 
 ## The maximum number of runs (invocations of targetRunner) that will
 ## performed. It determines the (maximum) budget of experiments for the tuning.
-maxExperiments = 100
+maxExperiments = 1000
 
 ## Enable/disable deterministic algorithm mode, if enabled irace
 ## will not use an instance more that once in each race. Note that
