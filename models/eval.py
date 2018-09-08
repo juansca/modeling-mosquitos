@@ -20,12 +20,7 @@ class BadModelName(Exception):
     pass
 
 
-if __name__ == '__main__':
-    opts = docopt(__doc__)
-
-    # Load model
-    model_file = Path(opts['-m'])
-
+def model_evaluation(model_file, data_file, file_plot_path, file_data_path):
     model_pkl = open(model_file, 'rb')
     model = pickle.load(model_pkl)
     model_pkl.close()
@@ -39,7 +34,6 @@ if __name__ == '__main__':
 #        pass
 
     # Load data
-    data_file = Path(opts['-i'])
     n_cols, weeks, y, X = load_data(filename=data_file)
 
     # Get stats from the prediction
@@ -52,9 +46,24 @@ if __name__ == '__main__':
 
     print("The MSE of the prediction is {}".format(MSE))
 
-    if opts['-o'] is not None:
-        file_plot_path = Path(opts['-o'], model_file.stem + '.eps')
-        file_data_path = Path(opts['-o'], model_file.stem + '.csv')
+    my_plotter = PlotData()
+    my_plotter.generate_curve_plot(weeks, y_true, y_pred)
+    my_plotter.save_plot_result(file_plot_path)
+
+    save_data(file_data_path, weeks, y_true, y_pred)
+
+
+if __name__ == '__main__':
+    opts = docopt(__doc__)
+
+    # Load model
+    model_file = Path(opts['-m'])
+    data_file = Path(opts['-i'])
+    out_dir = opts['-o']
+
+    if out_dir is not None:
+        file_plot_path = Path(out_dir, model_file.stem + '.eps')
+        file_data_path = Path(out_dir, model_file.stem + '.csv')
 
     else:
         root_dir = Path(Path(__file__).parent, 'evaluations', data_file.stem)
@@ -63,8 +72,4 @@ if __name__ == '__main__':
         file_plot_path = Path(root_dir, model_file.stem + '.eps')
         file_data_path = Path(root_dir, model_file.stem + '.csv')
 
-    my_plotter = PlotData()
-    my_plotter.generate_curve_plot(weeks, y_true, y_pred)
-    my_plotter.save_plot_result(file_plot_path)
-
-    save_data(file_data_path, weeks, y_true, y_pred)
+    model_evaluation(model_file, data_file, file_plot_path, file_data_path)
