@@ -110,6 +110,7 @@ ENV/
 
 # Rdata
 *.Rdata
+*.R*
 
 # Data
 *.csv
