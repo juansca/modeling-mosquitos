@@ -39,7 +39,9 @@ def load_data(filename='data/all.csv'):
 def stats(xs, ts, model, n_splits=5):
     cv = TimeSeriesSplit(n_splits)
     scores = cross_val_score(model, xs, ts, cv=cv.split(xs),
-                             scoring='explained_variance')
+                             scoring='neg_mean_squared_error')
+    scores = np.sqrt(-scores)
+
     mean = scores.mean()
     std_dev = scores.std()
 
@@ -56,21 +58,6 @@ def print_stats(scores, mean, std_dev, title='Stats'):
     print('Standard Deviation of Score: ', std_dev)
 
 
-def save_plot(filename, weeks, y_true, y_pred, xlabel='Weeks',
-              ylabel='Normalized abundance', label_true='Ground truth',
-              label_pred='Model', dpi=300):
-
-    plt.clf()
-
-    plt.plot(weeks, y_true, color='c', linestyle='dashed', label=label_true)
-    plt.plot(weeks, y_pred, color='g', linestyle='solid', label=label_pred)
-
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-
-    plt.legend()
-
-    plt.savefig(filename, format='eps', dpi=dpi)
 
 
 def get_filename_from_path(path):
