@@ -32,7 +32,7 @@ import sys
 # examples/acotsp/target-runner
 # exe = "~/bin/executable"
 ROOT_DIR = os.getcwd()
-exe = os.path.join(ROOT_DIR, "main_tune.py")
+exe = os.path.join(ROOT_DIR, "model_tunner.py")
 fixed_params = ""
 
 
