@@ -3,7 +3,7 @@ from pandas import read_csv
 import numpy as np
 from pathlib import Path
 
-from constants import USECOLS
+from data.constants import USECOLS
 
 USECOLS_STRING = ",".join(USECOLS)
 
