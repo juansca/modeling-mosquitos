@@ -115,3 +115,6 @@ ENV/
 # Data
 *.csv
 *.eps
+
+# Models
+*.pkl
