@@ -3,7 +3,6 @@ import numpy as np
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.model_selection import cross_val_score
 
-
 def smoothing(xs):
     n = len(xs)
     for i in range(1, n - 1):
@@ -56,8 +55,6 @@ def print_stats(scores, mean, std_dev, title='Stats'):
     print('Model Scores: ', scores)
     print('Mean Score: ', mean)
     print('Standard Deviation of Score: ', std_dev)
-
-
 
 
 def get_filename_from_path(path):

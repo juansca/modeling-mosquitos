@@ -1,19 +1,11 @@
-"""Plot input data (not predictions) of different cities.
+"""Plot input data (not predictions) of different cities."""
+from src.utils import get_filename_from_path
+from data.constants import XTICKS_HEATMAP
 
-Usage:
-  ./plotdata.py [--skipcols <n>] [--nolag] <file> ...
-
-Options:
-  --skipcols <n>           plot the data skipping the first <n> cols
-  --nolag                  only plot variables with no lag
-  --help                   show this screen
-"""
 from pandas import read_csv
 from scipy.stats import zscore
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
-from utils import get_filename_from_path
-from constants import XTICKS_HEATMAP
 import numpy as np
 import seaborn as sns
 
