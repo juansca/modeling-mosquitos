@@ -7,14 +7,16 @@ OVERLAPPING=0.5
 rm data/* -f
 rm instances/* -f
 
-python src/data_cleaner.py -i raw_data/clorinda.csv -o instances/ -s $INSTANCES -p $OVERLAPPING
-python src/data_cleaner.py -i raw_data/pampa.csv -o instances/ -s $INSTANCES -p $OVERLAPPING
-python src/data_cleaner.py -i raw_data/iguazu.csv -o instances/ -s $INSTANCES -p $OVERLAPPING
+# Instances for tunning
+python data/clean_data.py -i data/raw_data/clorinda.csv -o tunning/instances/ --instances $INSTANCES --overlap $OVERLAPPING
+python data/clean_data.py -i data/raw_data/pampa.csv -o tunning/instances/ --instances $INSTANCES --overlap $OVERLAPPING
+python data/clean_data.py -i data/raw_data/iguazu.csv -o tunning/instances/ --instances $INSTANCES --overlap $OVERLAPPING
 
-python src/data_cleaner.py -i raw_data/tartagal.csv -o data/tartagal.csv
-python src/data_cleaner.py -i raw_data/clorinda.csv -o data/clorinda.csv
-python src/data_cleaner.py -i raw_data/pampa.csv -o data/pampa.csv
-python src/data_cleaner.py -i raw_data/iguazu.csv -o data/iguazu.csv
+# Cleaned data to train and eval models
+python data/clean_data.py -i data/raw_data/tartagal.csv -o data/cleaned_data/tartagal/
+python data/clean_data.py -i data/raw_data/clorinda.csv -o data/cleaned_data/clorinda/
+python data/clean_data.py -i data/raw_data/pampa.csv -o data/cleaned_data/pampa/
+python data/clean_data.py -i data/raw_data/iguazu.csv -o data/cleaned_data/iguazu/
 
 # Trap ctrl-c and other exit signals and delete all temporary files
 trap TrapError 1 2 3 15;
