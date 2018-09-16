@@ -11,7 +11,7 @@ Options:
   -p <file>         CSV file where are saved the hyperparameters (in case of
                     tunning module was used).
 """
-from src.utils import load_data, stats, print_stats
+from utils.utils import load_data, stats, print_stats
 import pandas as pd
 from sklearn.decomposition import PCA
 from models import MODELS

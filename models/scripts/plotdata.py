@@ -1,5 +1,5 @@
 """Plot input data (not predictions) of different cities."""
-from src.utils import get_filename_from_path
+from utils.utils import get_filename_from_path
 from data.constants import XTICKS_HEATMAP
 
 from pandas import read_csv

@@ -6,7 +6,7 @@ Usage:
   ./main_tune.py -h | --help
 """
 
-from src.utils import load_data, stats
+from utils.utils import load_data, stats
 from sklearn.decomposition import PCA
 from models.models import MODELS
 import pandas as pd

@@ -8,8 +8,8 @@ Options:
   -m <model>        Model you want to evaluate as pickle format
   -o <dir>          Directory where the evaluation plot result will be saved
 """
-from src.utils import load_data, stats, save_data
-from src.plotdata import PlotData
+from utils.utils import load_data, stats, save_data
+from models.scripts.plotdata import PlotData
 from docopt import docopt
 from pathlib import Path
 import pickle
