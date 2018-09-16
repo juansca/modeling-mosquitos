@@ -66,7 +66,7 @@ if __name__ == '__main__':
         file_data_path = Path(out_dir, model_file.stem + '.csv')
 
     else:
-        root_dir = Path(Path(__file__).parent, 'evaluations', data_file.stem)
+        root_dir = Path(Path(__file__).parents[1], 'evaluations', data_file.stem)
         root_dir.mkdir(parents=True, exist_ok=True)
 
         file_plot_path = Path(root_dir, model_file.stem + '.eps')

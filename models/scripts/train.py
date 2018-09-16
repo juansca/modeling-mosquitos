@@ -57,7 +57,7 @@ def train_model(train_path: Path, model_name: str, hparams: Path):
     model.fit(X, y)
 
     print("Saving the model...")
-    trained_model_dir = Path(Path(__file__).parent, 'trained')
+    trained_model_dir = Path(Path(__file__).parents[1], 'trained')
     trained_model_dir.mkdir(parents=True, exist_ok=True)
     trained_model_file = Path(trained_model_dir, model_name + '.pkl')
 
