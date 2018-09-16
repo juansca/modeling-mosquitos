@@ -1,5 +1,5 @@
 from scipy.stats import zscore
-from pandas import read_csv
+import pandas as pd
 import numpy as np
 from pathlib import Path
 
@@ -21,7 +21,9 @@ class DataCleaner():
         """
 
         self.in_file = Path(in_file)
-        self.out_dir = Path(out_dir)
+        self.out_dir = out_dir
+        Path(out_dir).mkdir(parents=True,
+                            exist_ok=True)
 
     def _overlap(self, a, b, p):
         split_point = int(p * len(a))
@@ -51,7 +53,7 @@ class DataCleaner():
         in_path = self.in_file
         out_path = self.out_dir
 
-        df = read_csv(in_path, sep=',', usecols=USECOLS)
+        df = pd.read_csv(in_path, sep=',', usecols=USECOLS)
         df = df.dropna()
 
         result = df.apply(zscore)
@@ -60,7 +62,33 @@ class DataCleaner():
         results = self._splitter(result, n_inst, p_overlap)
 
         fname_without_ext = in_path.stem
+        data_files = []
         for i, r in enumerate(results):
             out = Path(out_path, fname_without_ext + str(i) + '.csv')
-            fmt = ",".join(["%s"] * df.shape[1])
-            np.savetxt(out, r, fmt=fmt, delimiter=',', header=USECOLS_STRING)
+            data_files.append(out)
+            r.to_csv(out, sep=',', header=USECOLS_STRING)
+
+        self.data_files = data_files
+
+    def train_test_split(self, p_eval=0.2):
+        out_dir = self.out_dir
+
+        val_out_dir = Path(out_dir, 'val')
+        val_out_dir.mkdir(parents=True, exist_ok=True)
+        train_out_dir = Path(out_dir, 'train')
+        train_out_dir.mkdir(parents=True, exist_ok=True)
+
+        for data_file in self.data_files:
+            fname = data_file.stem
+
+            df = pd.read_csv(data_file, sep=',', usecols=USECOLS)
+
+            val_limit = int(df.shape[0] * p_eval)
+            validation = df[df.shape[0] - val_limit:]
+            train = df[:df.shape[0] - val_limit]
+
+            v_file = Path(val_out_dir, fname + '_val' + '.csv')
+            validation.to_csv(v_file, sep=',', header=USECOLS_STRING)
+
+            t_file = Path(train_out_dir, fname + '_train' + '.csv')
+            train.to_csv(t_file, sep=',', header=USECOLS_STRING)
